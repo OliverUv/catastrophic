@@ -37,14 +37,14 @@ test(async function basic_use(t) {
     // This is how you would use it. Typing `ohno.` will
     // trigger auto complete suggestions as appropriate.
     // Fantastic.
-    throw ohno.too_boring_to_compute('errordata');
+    throw ohno.too_boring_to_compute(4); // << Should give type error
   }
 
-  const actually_thrown_error:Catastrophe = t.throws(throwing_inner_function);
+  const actually_thrown_error:Catastrophe<string> = t.throws(throwing_inner_function);
   
   t.deepEqual(
-      actually_thrown_error.error,
-      tst_errors.too_boring_to_compute);
+      <any>actually_thrown_error.error,
+      <any>tst_errors.too_boring_to_compute);
 
   t.deepEqual(
       actually_thrown_error.category,

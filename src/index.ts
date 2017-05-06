@@ -13,6 +13,7 @@ export interface ErrorDesc<D = void> {
 }
 
 export interface ErrorDescCol {
+  // This any overrides the more specific type knowledge :(
   [error_key:string]:ErrorDesc<any>;
 }
 
@@ -56,11 +57,11 @@ class ErrorCategory {
 }
 
 // Is this where a language starts requiring higher kinded types?
-export type ReturnsCatastrophe<C extends ErrorDesc<D>> =
+export type ReturnsCatastrophe<D> =
   (data?:D)=>Catastrophe<D>;
 
 export type Cat<T extends ErrorDescCol> = {
-  [P in keyof T]:ReturnsCatastrophe<T[P]>;
+  [P in keyof T]:ReturnsCatastrophe<T[P]['__data_type_lookup']>;
 };
 
 const internal_errors = {
