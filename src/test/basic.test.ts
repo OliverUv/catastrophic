@@ -16,7 +16,7 @@ test(async function basic_use(t) {
       description: `the function couldn't do it due to excessive worry`,
     },
     too_boring_to_compute: {
-      unique_number: 2, // To preserve API compat, must never change ever
+      unique_number: 2,
       http_code: 400,
       description: `user supplied very boring data`,
     },
@@ -38,13 +38,22 @@ test(async function basic_use(t) {
 
   const actually_thrown_error:Catastrophe = t.throws(throwing_inner_function);
   
-  t.deepEqual(actually_thrown_error.error, tst_errors.too_boring_to_compute);
-  t.deepEqual(actually_thrown_error.category, tst_category);
-  t.is(actually_thrown_error.data, 'errordata');
+  t.deepEqual(
+      actually_thrown_error.error,
+      tst_errors.too_boring_to_compute);
+
+  t.deepEqual(
+      actually_thrown_error.category,
+      tst_category);
+
+  t.is(
+      actually_thrown_error.data,
+      'errordata');
+
   let stack = actually_thrown_error.native_error.stack;
   if (stack) {
     t.truthy(stack.includes('throwing_inner_function'));
   } else {
-    t.fail('Thrown native contained no stackt race');
+    t.fail('Thrown native contained no stack trace');
   }
 });
