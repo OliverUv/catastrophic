@@ -57,3 +57,33 @@ test(async function basic_use(t) {
     t.fail('Thrown native contained no stack trace');
   }
 });
+
+test(async function throw_on_reserved_code(t) {
+  let error_manager = new CatastrophicCaretaker();
+  t.plan(1);
+  t.throws(() => {
+    error_manager.register_category({
+      code: 'CATASTROPHIC',
+      description: 'This must not be allowed.',
+    },{});
+  })
+});
+
+test(async function throw_on_duplicate_code(t) {
+  let error_manager = new CatastrophicCaretaker();
+  t.plan(1);
+  error_manager.register_category({
+    code: 'one',
+    description: 'This is ok',
+  },{});
+  error_manager.register_category({
+    code: 'two',
+    description: 'This is also ok',
+  },{});
+  t.throws(() => {
+    error_manager.register_category({
+      code: 'two',
+      description: 'But this is not, as two is already used',
+    },{});
+  })
+});

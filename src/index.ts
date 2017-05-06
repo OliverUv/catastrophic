@@ -22,7 +22,7 @@ export class Catastrophe {
   public data?:any;
 }
 
-export class ErrorCategory {
+class ErrorCategory {
   private errors:ErrorDescCol = {};
   private unique_numbers:{[num:number]:boolean} = {};
 
@@ -60,16 +60,33 @@ export type Killer<T> = {
   [error_key in keyof T]:ReturnsCatastrophe;
 };
 
+const internal_errors = {
+  tried_to_use_reserved_category_code: {
+    unique_number: 0,
+    http_code: 500,
+    description: `Tried to use reserved internal category code`,
+  },
+  non_unique_category_code: {
+    unique_number: 1,
+    http_code: 500,
+    description: `Tried to register two categories with the same category code`,
+  },
+};
+
 export class CatastrophicCaretaker {
   private categories:ErrorCategoryDesc[] = [];
   private category_codes:{[code:string]:boolean} = {};
+  private ohno:Killer<typeof internal_errors>;
 
   public register_category<T extends ErrorDescCol>(
     cat:ErrorCategoryDesc,
     errors:T,
   ) : Killer<T> {
     if (this.category_codes[cat.code]) {
-      // TODO Error out because of code
+      if (cat.code == this.internal_error_code) {
+        throw this.ohno.tried_to_use_reserved_category_code();
+      }
+      throw this.ohno.non_unique_category_code(cat);
     }
     this.categories.push(cat);
     this.category_codes[cat.code] = true;
@@ -80,5 +97,12 @@ export class CatastrophicCaretaker {
       killer[k] = (data:any) => catt.die(errors[k], data);
     });
     return <Killer<T>>killer;
+  }
+
+  constructor(private internal_error_code='CATASTROPHIC') {
+    this.register_category({
+      code: this.internal_error_code,
+      description: 'Errors from within the Catastrophic Error Builder',
+    }, internal_errors);
   }
 }
