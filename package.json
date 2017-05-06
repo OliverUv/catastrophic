@@ -21,7 +21,8 @@
     "ts",
     "error",
     "throw",
-    "error code"
+    "error code",
+    "autocompletion"
   ],
   "author": "Oliver Uvman <oliver@uvman.se> (http://vvv.uvman.se/)",
   "license": "MIT",

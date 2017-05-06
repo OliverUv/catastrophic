@@ -52,19 +52,31 @@ export class ErrorCategory {
   }
 }
 
+export type ReturnsCatastrophe = ()=>Catastrophe;
+
+export type Killer<T> = {
+  [error_key in keyof T]:ReturnsCatastrophe;
+};
+
 export class CatastrophicCaretaker {
   private categories:ErrorCategoryDesc[] = [];
   private category_codes:{[code:string]:boolean} = {};
 
-  public register_category(
+  public register_category<T extends ErrorDescCol>(
     cat:ErrorCategoryDesc,
-    errors:ErrorDescCol,
-  ) : ErrorCategory {
+    errors:T,
+  ) : Killer<T> {
     if (this.category_codes[cat.code]) {
       // TODO Error out because of code
     }
     this.categories.push(cat);
     this.category_codes[cat.code] = true;
-    return new ErrorCategory(cat);
+    let catt = new ErrorCategory(cat);
+    catt.register_errors(errors);
+    let killer:any = {};
+    Object.keys(errors).forEach((k) => {
+      killer[k] = () => catt.die(errors[k]);
+    });
+    return <Killer<T>>killer;
   }
 }
