@@ -1,6 +1,10 @@
 import { test } from 'ava';
 
-import { CatastrophicCaretaker, Catastrophe } from '../';
+import {
+  CatastrophicCaretaker,
+  Catastrophe,
+  ErrorDesc,
+} from '../';
 
 test(async function basic_use(t) {
   t.plan(5);
@@ -15,7 +19,7 @@ test(async function basic_use(t) {
       http_code: 500,
       description: `the function couldn't do it due to excessive worry`,
     },
-    too_boring_to_compute: {
+    too_boring_to_compute: <ErrorDesc<string>>{
       unique_number: 2,
       http_code: 400,
       description: `user supplied very boring data`,

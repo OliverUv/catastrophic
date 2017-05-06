@@ -5,21 +5,22 @@ export interface ErrorCategoryDesc {
   code:string;
 }
 
-export interface ErrorDesc {
+export interface ErrorDesc<D = void> {
   unique_number:number;
   http_code:number;
   description:string;
+  __data_type_lookup?:D; // Never set this
 }
 
 export interface ErrorDescCol {
-  [error_key:string]:ErrorDesc;
+  [error_key:string]:ErrorDesc<any>;
 }
 
-export class Catastrophe {
+export class Catastrophe<D = void> {
   public native_error:Error;
   public error:ErrorDesc;
   public category:ErrorCategoryDesc;
-  public data?:any;
+  public data?:D;
 }
 
 class ErrorCategory {
@@ -44,7 +45,7 @@ class ErrorCategory {
   }
 
   // Builds a Catastrophe for throwing
-  die(error:ErrorDesc, data?:any) : Catastrophe {
+  die<D>(error:ErrorDesc, data?:D) : Catastrophe<D> {
     return {
       category: this.category,
       native_error: new Error('catastrophe'),
@@ -54,10 +55,12 @@ class ErrorCategory {
   }
 }
 
-export type ReturnsCatastrophe = (data?:any)=>Catastrophe;
+// Is this where a language starts requiring higher kinded types?
+export type ReturnsCatastrophe<C extends ErrorDesc<D>> =
+  (data?:D)=>Catastrophe<D>;
 
-export type Cat<T> = {
-  [error_key in keyof T]:ReturnsCatastrophe;
+export type Cat<T extends ErrorDescCol> = {
+  [P in keyof T]:ReturnsCatastrophe<T[P]>;
 };
 
 const internal_errors = {
@@ -66,7 +69,7 @@ const internal_errors = {
     http_code: 500,
     description: `Tried to use reserved internal category code`,
   },
-  non_unique_category_code: {
+  non_unique_category_code: <ErrorDesc<ErrorDesc>>{
     unique_number: 1,
     http_code: 500,
     description: `Tried to register two categories with the same category code`,
