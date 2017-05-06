@@ -56,7 +56,7 @@ class ErrorCategory {
 
 export type ReturnsCatastrophe = (data?:any)=>Catastrophe;
 
-export type Killer<T> = {
+export type Cat<T> = {
   [error_key in keyof T]:ReturnsCatastrophe;
 };
 
@@ -76,12 +76,12 @@ const internal_errors = {
 export class CatastrophicCaretaker {
   private categories:ErrorCategoryDesc[] = [];
   private category_codes:{[code:string]:boolean} = {};
-  private ohno:Killer<typeof internal_errors>;
+  private ohno:Cat<typeof internal_errors>;
 
   public register_category<T extends ErrorDescCol>(
     cat:ErrorCategoryDesc,
     errors:T,
-  ) : Killer<T> {
+  ) : Cat<T> {
     if (this.category_codes[cat.code]) {
       if (cat.code == this.internal_error_code) {
         throw this.ohno.tried_to_use_reserved_category_code();
@@ -96,7 +96,7 @@ export class CatastrophicCaretaker {
     Object.keys(errors).forEach((k) => {
       killer[k] = (data:any) => catt.die(errors[k], data);
     });
-    return <Killer<T>>killer;
+    return <Cat<T>>killer;
   }
 
   constructor(private internal_error_code='CATASTROPHIC') {
