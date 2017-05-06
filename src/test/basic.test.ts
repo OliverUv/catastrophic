@@ -3,7 +3,7 @@ import { test } from 'ava';
 import { CatastrophicCaretaker, Catastrophe } from '../';
 
 test(async function basic_use(t) {
-  t.plan(4);
+  t.plan(5);
 
   let error_manager = new CatastrophicCaretaker();
 
@@ -33,13 +33,14 @@ test(async function basic_use(t) {
     // This is how you would use it. Typing `ohno.` will
     // trigger auto complete suggestions as appropriate.
     // Fantastic.
-    throw ohno.too_boring_to_compute();
+    throw ohno.too_boring_to_compute('errordata');
   }
 
   const actually_thrown_error:Catastrophe = t.throws(throwing_inner_function);
   
   t.deepEqual(actually_thrown_error.error, tst_errors.too_boring_to_compute);
   t.deepEqual(actually_thrown_error.category, tst_category);
+  t.is(actually_thrown_error.data, 'errordata');
   let stack = actually_thrown_error.native_error.stack;
   if (stack) {
     t.truthy(stack.includes('throwing_inner_function'));
