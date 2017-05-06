@@ -19,6 +19,12 @@ export class Catastrophe {
   public native_error:Error;
   public error:ErrorDesc;
   public category:ErrorCategoryDesc;
+  // If you wish this annotation could be statically typed per ErrorDesc,
+  // take a look at the experiment/typesafe_arbitrary_data{,2} branches.
+  // It's as far as I got. Probably not possible. :(
+  // See also
+  // * https://github.com/Microsoft/TypeScript/issues/1290
+  // * https://github.com/Microsoft/TypeScript/issues/1213
   public annotation?:any;
 }
 
