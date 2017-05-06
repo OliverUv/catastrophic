@@ -47,7 +47,7 @@ test(async function basic_use(t) {
       tst_category);
 
   t.is(
-      actually_thrown_error.data,
+      actually_thrown_error.annotation,
       'errordata');
 
   let stack = actually_thrown_error.native_error.stack;

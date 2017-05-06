@@ -19,7 +19,7 @@ export class Catastrophe {
   public native_error:Error;
   public error:ErrorDesc;
   public category:ErrorCategoryDesc;
-  public data?:any;
+  public annotation?:any;
 }
 
 class ErrorCategory {
@@ -44,17 +44,17 @@ class ErrorCategory {
   }
 
   // Builds a Catastrophe for throwing
-  die(error:ErrorDesc, data?:any) : Catastrophe {
+  die(error:ErrorDesc, annotation?:any) : Catastrophe {
     return {
       category: this.category,
       native_error: new Error('catastrophe'),
       error,
-      data,
+      annotation,
     };
   }
 }
 
-export type ReturnsCatastrophe = (data?:any)=>Catastrophe;
+export type ReturnsCatastrophe = (annotation?:any)=>Catastrophe;
 
 export type Cat<T> = {
   [error_key in keyof T]:ReturnsCatastrophe;
@@ -94,7 +94,7 @@ export class CatastrophicCaretaker {
     catt.register_errors(errors);
     let killer:any = {};
     Object.keys(errors).forEach((k) => {
-      killer[k] = (data:any) => catt.die(errors[k], data);
+      killer[k] = (annotation:any) => catt.die(errors[k], annotation);
     });
     return <Cat<T>>killer;
   }
