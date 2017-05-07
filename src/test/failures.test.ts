@@ -61,25 +61,3 @@ test(async function throw_on_duplicate_error_number(t) {
     });
   });;
 });
-
-test(async function throw_on_duplicate_error_key(t) {
-  let error_manager = new CatastrophicCaretaker();
-  t.plan(1);
-  t.throws(() => {
-    error_manager.register_category({
-      code: 'one',
-      description: 'This is ok',
-    },{
-      error_one: {
-        unique_number: 0,
-        http_code: 500,
-        description: 'ok'
-      },
-      error_two: {
-        unique_number: 0,
-        http_code: 500,
-        description: 'not ok'
-      },
-    });
-  });;
-});

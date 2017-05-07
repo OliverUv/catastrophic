@@ -7,16 +7,15 @@ test(async function basic_use(t) {
 
   let error_manager = new CatastrophicCaretaker();
 
-  // To preserve API compat, unique_number must always refer to the
-  // same error, forever.
+  // To preserve API compat, unique_number must always refer to the same error, forever.
   let tst_errors = {
     tepid_trepidations: {
-      unique_number: 1,
+      unique_number: 0,
       http_code: 500,
       description: `the function couldn't do it due to excessive worry`,
     },
     too_boring_to_compute: {
-      unique_number: 2,
+      unique_number: 1,
       http_code: 400,
       description: `user supplied very boring data`,
     },
