@@ -124,11 +124,13 @@ export class CatastrophicCaretaker {
     // Construct
     let category = new Category(cat_desc, this.ohno, errors);
 
-    // Build and return Catastrophe factory
-    let cat:any = {};
-    Object.keys(errors).forEach((k) => {
-      cat[k] = (annotation:any) => category.die(errors[k], annotation);
-    });
-    return <Cat<T>>cat;
+    // unsafe {
+      // Build and return Catastrophe factory
+      let cat:any = {};
+      Object.keys(errors).forEach((k) => {
+        cat[k] = (annotation:any) => category.die(errors[k], annotation);
+      });
+      return <Cat<T>>cat;
+    // } end unsafe
   }
 }
