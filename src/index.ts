@@ -29,23 +29,56 @@ export interface ErrorSpecCollection {
   [error_key:string]:ErrorSpec;
 }
 
+export interface CatastropheIdentity {
+  error_category:string;
+  error_number:number;
+}
+
+export interface CatastropheSpec {
+  native_error:Error;
+  error:ErrorSpec;
+  category:CategorySpec;
+  separator:string;
+  annotation?:any;
+}
+
 export class Catastrophe {
   public native_error:Error;
   public error:ErrorSpec;
   public category:CategorySpec;
-
-  // If you wish this annotation could be statically typed per ErrorDesc,
+  public separator:string;
+  public annotation?:any;
+  // If you wish the annotation could be statically typed per ErrorDesc,
   // take a look at the experiment/typesafe_arbitrary_data{,2} branches.
   // It's as far as I got. Probably not possible. :( See also
   // * https://github.com/Microsoft/TypeScript/issues/1290
   // * https://github.com/Microsoft/TypeScript/issues/1213
-  public annotation?:any;
+
+  constructor(spec:CatastropheSpec) {
+    this.native_error = spec.native_error;
+    this.error = spec.error;
+    this.category = spec.category;
+    this.separator = spec.separator;
+    this.annotation = spec.annotation;
+  }
+
+  public identity() : string {
+    return `${this.category.code}${this.separator}${this.error.unique_number}`;
+  }
+
+  public identity_json() : CatastropheIdentity {
+    return {
+      error_category: this.category.code,
+      error_number: this.error.unique_number,
+    };
+  }
 }
 
 class Category {
   private unique_numbers:{[num:number]:boolean} = {};
 
   constructor(
+    private separator:string,
     private category:CategorySpec,
     private ohno:InternalErrorCat,
     private errors:ErrorSpecCollection,
@@ -64,13 +97,14 @@ class Category {
   }
 
   // Builds a Catastrophe for throwing
-  die(error:ErrorSpec, annotation?:any) : Catastrophe {
-    return {
-      category: this.category,
+  public die(error:ErrorSpec, annotation?:any) : Catastrophe {
+    return new Catastrophe({
       native_error: new Error('catastrophe'),
       error,
+      category: this.category,
+      separator: this.separator,
       annotation,
-    };
+    });
   }
 }
 
@@ -149,7 +183,11 @@ export class CatastrophicCaretaker {
     this.category_codes[cat_desc.code] = true;
 
     // Construct
-    let category = new Category(cat_desc, this.ohno, errors);
+    let category = new Category(
+        this.code_number_separator,
+        cat_desc,
+        this.ohno,
+        errors);
 
     // unsafe {
       // Build and return Catastrophe factory

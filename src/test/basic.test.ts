@@ -17,7 +17,7 @@ import { test } from 'ava';
 import { CatastrophicCaretaker, Catastrophe } from '../';
 
 test(async function basic_use(t) {
-  t.plan(5);
+  t.plan(7);
 
   let error_manager = new CatastrophicCaretaker();
 
@@ -58,6 +58,12 @@ test(async function basic_use(t) {
   t.is(
       actually_thrown_error.annotation,
       'errordata');
+
+  t.is(actually_thrown_error.identity(), 'TST_1');
+  t.deepEqual(actually_thrown_error.identity_json(), {
+    error_category: 'TST',
+    error_number: 1,
+  });
 
   let stack = actually_thrown_error.native_error.stack;
   if (stack) {
