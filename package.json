@@ -25,7 +25,7 @@
     "autocompletion"
   ],
   "author": "Oliver Uvman <oliver@uvman.se> (http://vvv.uvman.se/)",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "devDependencies": {
     "ava": "^0.18.2",
     "tslint": "^3.15.1",
