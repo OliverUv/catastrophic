@@ -1,4 +1,4 @@
-export interface ErrorCategoryDesc {
+export interface CategoryDesc {
   // Should only be visible to devs inside the project,
   // never exposed anywhere except debug logs.
   description:string;
@@ -18,23 +18,23 @@ export interface ErrorDescCol {
 export class Catastrophe {
   public native_error:Error;
   public error:ErrorDesc;
-  public category:ErrorCategoryDesc;
+  public category:CategoryDesc;
+
   // If you wish this annotation could be statically typed per ErrorDesc,
   // take a look at the experiment/typesafe_arbitrary_data{,2} branches.
-  // It's as far as I got. Probably not possible. :(
-  // See also
+  // It's as far as I got. Probably not possible. :( See also
   // * https://github.com/Microsoft/TypeScript/issues/1290
   // * https://github.com/Microsoft/TypeScript/issues/1213
   public annotation?:any;
 }
 
-class ErrorCategory {
+class Category {
   private errors:ErrorDescCol = {};
   private unique_numbers:{[num:number]:boolean} = {};
 
   constructor(
-    private category:ErrorCategoryDesc,
-    private ohno:InternalOhno,
+    private category:CategoryDesc,
+    private ohno:InternalErrorCat,
   ) {}
 
   register_errors(errors:ErrorDescCol) : void {
@@ -92,15 +92,15 @@ const internal_errors = {
   },
 };
 
-type InternalOhno = Cat<typeof internal_errors>;
+type InternalErrorCat = Cat<typeof internal_errors>;
 
 export class CatastrophicCaretaker {
-  private categories:ErrorCategoryDesc[] = [];
+  private categories:CategoryDesc[] = [];
   private category_codes:{[code:string]:boolean} = {};
-  private ohno:InternalOhno;
+  private ohno:InternalErrorCat;
 
   public register_category<T extends ErrorDescCol>(
-    cat_desc:ErrorCategoryDesc,
+    cat_desc:CategoryDesc,
     errors:T,
   ) : Cat<T> {
     if (this.category_codes[cat_desc.code]) {
@@ -111,7 +111,7 @@ export class CatastrophicCaretaker {
     }
     this.categories.push(cat_desc);
     this.category_codes[cat_desc.code] = true;
-    let error_category = new ErrorCategory(cat_desc, this.ohno);
+    let error_category = new Category(cat_desc, this.ohno);
     error_category.register_errors(errors);
     let cat:any = {};
     Object.keys(errors).forEach((k) => {
