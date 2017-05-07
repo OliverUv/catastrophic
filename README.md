@@ -27,9 +27,10 @@ Catastrophes for throwing. TypeScript provides auto completion for these
 factories. These factories are called `Cat`s. Idiomatic Cats are named
 `ohno`.
 
-Any property in this library that is described as permanent is used
-to construct unique error identifiers for public consumption. Other
-properties are only intended for use in debug logs.
+Any property in this library that is described as permanent or unique is
+used to construct error identifiers for public consumption. They should
+remain unique and permanent. Other properties are only intended for use
+in debug logs.
 
 Permanent properties should never be changed once they have been
 defined. They are defined explicitly by developers using this library,
