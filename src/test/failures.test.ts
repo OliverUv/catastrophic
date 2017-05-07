@@ -75,3 +75,22 @@ test(async function throw_on_duplicate_error_number(t) {
     });
   });;
 });
+
+test(async function throw_on_separator_collision(t) {
+  t.plan(1);
+  t.throws(() => {
+    let error_manager = new CatastrophicCaretaker('X_', '_');
+  });;
+});
+
+test(async function throw_on_separator_collision_2(t) {
+  t.plan(1);
+  let error_manager = new CatastrophicCaretaker('X', '_');
+  t.plan(1);
+  t.throws(() => {
+    error_manager.register_category({
+      code: 'heyo_',
+      description: 'This is not ok',
+    }, {});
+  });;
+});

@@ -91,13 +91,18 @@ const internal_errors = {
     http_code: 500,
     description: `Tried to register two categories with the same category code`,
   },
-  non_unique_error_key: {
+  category_code_contains_separator: {
     unique_number: 2,
+    http_code: 500,
+    description: `Category code contains separator, this is not allowed.`,
+  },
+  non_unique_error_key: {
+    unique_number: 3,
     http_code: 500,
     description: `Tried to register two errors with the same key in a single category`,
   },
   non_unique_error_number: {
-    unique_number: 3,
+    unique_number: 4,
     http_code: 500,
     description: `Tried to register two errors with the same number in a single category`,
   },
@@ -111,7 +116,10 @@ export class CatastrophicCaretaker {
   private category_codes:{[code:string]:boolean} = {};
   private ohno:InternalErrorCat;
 
-  constructor(private internal_error_code='CATASTROPHIC') {
+  constructor(
+    private internal_error_code='CATASTROPHIC',
+    private code_number_separator='_',
+  ) {
     this.register_category({
       code: this.internal_error_code,
       description: 'Errors from within the Catastrophic Error Builder',
@@ -122,6 +130,11 @@ export class CatastrophicCaretaker {
     cat_desc:CategorySpec,
     errors:T,
   ) : Cat<T> {
+
+    // Ensure category code doesn't contain the code/number separator
+    if (cat_desc.code.includes(this.code_number_separator)) {
+      throw this.ohno.category_code_contains_separator(cat_desc);
+    }
 
     // Ensure no conflicting Category Code
     if (this.category_codes[cat_desc.code]) {
