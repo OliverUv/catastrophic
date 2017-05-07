@@ -1,7 +1,7 @@
 {
   "name": "catastrophic",
   "version": "0.0.1",
-  "description": "Define modularized, unique, permanent error codes. Throw errors with stack traces.",
+  "description": "Auto completion and dependency injection friendly library for constructing modular unique permanent error codes",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
   "scripts": {
