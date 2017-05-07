@@ -41,16 +41,16 @@ test(async function throw_on_duplicate_category_code(t) {
   error_manager.register_category({
     code: 'one',
     description: 'This is ok',
-  },{});
+  }, {});
   error_manager.register_category({
     code: 'two',
     description: 'This is also ok',
-  },{});
+  }, {});
   t.throws(() => {
     error_manager.register_category({
       code: 'two',
       description: 'But this is not, as two is already used',
-    },{});
+    }, {});
   })
 });
 
