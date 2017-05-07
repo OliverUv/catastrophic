@@ -32,16 +32,19 @@ class ErrorCategory {
   private errors:ErrorDescCol = {};
   private unique_numbers:{[num:number]:boolean} = {};
 
-  constructor(private category:ErrorCategoryDesc) {}
+  constructor(
+    private category:ErrorCategoryDesc,
+    private ohno:InternalOhno,
+  ) {}
 
   register_errors(errors:ErrorDescCol) : void {
     // Ensure key and unique_number are not registered
     Object.keys(errors).forEach((k) => {
       if (this.errors.hasOwnProperty(k)) {
-        // TODO Error out because of key
+        this.ohno.non_unique_error_key([this.category, k, errors]);
       }
       if (this.unique_numbers[errors[k].unique_number]) {
-        // TODO Error out because of number
+        this.ohno.non_unique_error_number([this.category, k, errors]);
       }
       let error = errors[k];
       this.errors[k] = error;
@@ -77,12 +80,24 @@ const internal_errors = {
     http_code: 500,
     description: `Tried to register two categories with the same category code`,
   },
+  non_unique_error_key: {
+    unique_number: 2,
+    http_code: 500,
+    description: `Tried to register two errors with the same key in a single category`,
+  },
+  non_unique_error_number: {
+    unique_number: 3,
+    http_code: 500,
+    description: `Tried to register two errors with the same number in a single category`,
+  },
 };
+
+type InternalOhno = Cat<typeof internal_errors>;
 
 export class CatastrophicCaretaker {
   private categories:ErrorCategoryDesc[] = [];
   private category_codes:{[code:string]:boolean} = {};
-  private ohno:Cat<typeof internal_errors>;
+  private ohno:InternalOhno;
 
   public register_category<T extends ErrorDescCol>(
     cat_desc:ErrorCategoryDesc,
@@ -96,7 +111,7 @@ export class CatastrophicCaretaker {
     }
     this.categories.push(cat_desc);
     this.category_codes[cat_desc.code] = true;
-    let error_category = new ErrorCategory(cat_desc);
+    let error_category = new ErrorCategory(cat_desc, this.ohno);
     error_category.register_errors(errors);
     let cat:any = {};
     Object.keys(errors).forEach((k) => {
