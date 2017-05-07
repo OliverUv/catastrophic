@@ -151,11 +151,11 @@ export class CatastrophicCaretaker {
   private ohno:InternalErrorCat;
 
   constructor(
-    private internal_error_code='CATASTROPHIC',
-    private identity_separator='_',
+    private permanent_internal_error_code='CATASTROPHIC',
+    private permanent_identity_separator='_',
   ) {
     this.register_category({
-      unique_code: this.internal_error_code,
+      unique_code: this.permanent_internal_error_code,
       description: 'Errors from within the Catastrophic Error Builder',
     }, internal_errors);
   }
@@ -166,13 +166,13 @@ export class CatastrophicCaretaker {
   ) : Cat<T> {
 
     // Ensure category code doesn't contain the identity separator
-    if (cat_desc.unique_code.includes(this.identity_separator)) {
+    if (cat_desc.unique_code.includes(this.permanent_identity_separator)) {
       throw this.ohno.category_code_contains_separator(cat_desc);
     }
 
     // Ensure no conflicting Category Code
     if (this.category_codes[cat_desc.unique_code]) {
-      if (cat_desc.unique_code == this.internal_error_code) {
+      if (cat_desc.unique_code == this.permanent_internal_error_code) {
         throw this.ohno.tried_to_use_reserved_category_code();
       }
       throw this.ohno.non_unique_category_code(cat_desc);
@@ -184,7 +184,7 @@ export class CatastrophicCaretaker {
 
     // Construct
     let category = new Category(
-        this.identity_separator,
+        this.permanent_identity_separator,
         cat_desc,
         this.ohno,
         errors);
