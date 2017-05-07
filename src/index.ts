@@ -85,24 +85,24 @@ export class CatastrophicCaretaker {
   private ohno:Cat<typeof internal_errors>;
 
   public register_category<T extends ErrorDescCol>(
-    cat:ErrorCategoryDesc,
+    cat_desc:ErrorCategoryDesc,
     errors:T,
   ) : Cat<T> {
-    if (this.category_codes[cat.code]) {
-      if (cat.code == this.internal_error_code) {
+    if (this.category_codes[cat_desc.code]) {
+      if (cat_desc.code == this.internal_error_code) {
         throw this.ohno.tried_to_use_reserved_category_code();
       }
-      throw this.ohno.non_unique_category_code(cat);
+      throw this.ohno.non_unique_category_code(cat_desc);
     }
-    this.categories.push(cat);
-    this.category_codes[cat.code] = true;
-    let catt = new ErrorCategory(cat);
-    catt.register_errors(errors);
-    let killer:any = {};
+    this.categories.push(cat_desc);
+    this.category_codes[cat_desc.code] = true;
+    let error_category = new ErrorCategory(cat_desc);
+    error_category.register_errors(errors);
+    let cat:any = {};
     Object.keys(errors).forEach((k) => {
-      killer[k] = (annotation:any) => catt.die(errors[k], annotation);
+      cat[k] = (annotation:any) => error_category.die(errors[k], annotation);
     });
-    return <Cat<T>>killer;
+    return <Cat<T>>cat;
   }
 
   constructor(private internal_error_code='CATASTROPHIC') {
