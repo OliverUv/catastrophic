@@ -37,7 +37,7 @@ not implicitly, to avoid any unexpected changes.
 
 # Example
 
-TODO but do check out src/test/basic.test.ts
+TODO but do check out `src/test/docs.test.ts`
 
 # Details
 
