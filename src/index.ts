@@ -15,8 +15,8 @@
 export interface CategorySpec {
   // Should only be visible to devs inside the project,
   // never exposed anywhere except debug logs.
+  unique_code:string;
   description:string;
-  code:string;
 }
 
 export interface ErrorSpec {
@@ -63,12 +63,12 @@ export class Catastrophe {
   }
 
   public identity() : string {
-    return `${this.category.code}${this.separator}${this.error.unique_number}`;
+    return `${this.category.unique_code}${this.separator}${this.error.unique_number}`;
   }
 
   public identity_json() : CatastropheIdentity {
     return {
-      error_category: this.category.code,
+      error_category: this.category.unique_code,
       error_number: this.error.unique_number,
     };
   }
@@ -152,10 +152,10 @@ export class CatastrophicCaretaker {
 
   constructor(
     private internal_error_code='CATASTROPHIC',
-    private code_number_separator='_',
+    private identity_separator='_',
   ) {
     this.register_category({
-      code: this.internal_error_code,
+      unique_code: this.internal_error_code,
       description: 'Errors from within the Catastrophic Error Builder',
     }, internal_errors);
   }
@@ -165,14 +165,14 @@ export class CatastrophicCaretaker {
     errors:T,
   ) : Cat<T> {
 
-    // Ensure category code doesn't contain the code/number separator
-    if (cat_desc.code.includes(this.code_number_separator)) {
+    // Ensure category code doesn't contain the identity separator
+    if (cat_desc.unique_code.includes(this.identity_separator)) {
       throw this.ohno.category_code_contains_separator(cat_desc);
     }
 
     // Ensure no conflicting Category Code
-    if (this.category_codes[cat_desc.code]) {
-      if (cat_desc.code == this.internal_error_code) {
+    if (this.category_codes[cat_desc.unique_code]) {
+      if (cat_desc.unique_code == this.internal_error_code) {
         throw this.ohno.tried_to_use_reserved_category_code();
       }
       throw this.ohno.non_unique_category_code(cat_desc);
@@ -180,11 +180,11 @@ export class CatastrophicCaretaker {
 
     // Save metadata
     this.cat_descs.push(cat_desc);
-    this.category_codes[cat_desc.code] = true;
+    this.category_codes[cat_desc.unique_code] = true;
 
     // Construct
     let category = new Category(
-        this.code_number_separator,
+        this.identity_separator,
         cat_desc,
         this.ohno,
         errors);

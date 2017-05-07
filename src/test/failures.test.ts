@@ -21,7 +21,7 @@ test(async function throw_on_reserved_category_code(t) {
   let error_manager = new CatastrophicCaretaker();
   t.throws(() => {
     error_manager.register_category({
-      code: 'CATASTROPHIC',
+      unique_code: 'CATASTROPHIC',
       description: 'This must not be allowed.',
     },{});
   });
@@ -29,7 +29,7 @@ test(async function throw_on_reserved_category_code(t) {
   let error_manager_2 = new CatastrophicCaretaker('INTRNL');
   t.throws(() => {
     error_manager_2.register_category({
-      code: 'INTRNL',
+      unique_code: 'INTRNL',
       description: 'This must not be allowed.',
     },{});
   })
@@ -39,16 +39,16 @@ test(async function throw_on_duplicate_category_code(t) {
   let error_manager = new CatastrophicCaretaker();
   t.plan(1);
   error_manager.register_category({
-    code: 'one',
+    unique_code: 'one',
     description: 'This is ok',
   }, {});
   error_manager.register_category({
-    code: 'two',
+    unique_code: 'two',
     description: 'This is also ok',
   }, {});
   t.throws(() => {
     error_manager.register_category({
-      code: 'two',
+      unique_code: 'two',
       description: 'But this is not, as two is already used',
     }, {});
   })
@@ -59,7 +59,7 @@ test(async function throw_on_duplicate_error_number(t) {
   t.plan(1);
   t.throws(() => {
     error_manager.register_category({
-      code: 'one',
+      unique_code: 'one',
       description: 'This is ok',
     },{
       error_one: {
@@ -89,7 +89,7 @@ test(async function throw_on_separator_collision_2(t) {
   t.plan(1);
   t.throws(() => {
     error_manager.register_category({
-      code: 'heyo_',
+      unique_code: 'heyo_',
       description: 'This is not ok',
     }, {});
   });;

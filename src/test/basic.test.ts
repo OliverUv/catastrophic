@@ -21,6 +21,11 @@ test(async function basic_use(t) {
 
   let error_manager = new CatastrophicCaretaker();
 
+  let tst_category = {
+    unique_code: 'TST',
+    description: 'Testing category',
+  };
+
   let tst_errors = {
     tepid_trepidations: {
       unique_number: 0,
@@ -32,11 +37,6 @@ test(async function basic_use(t) {
       http_code: 400,
       description: `user supplied very boring data`,
     },
-  };
-
-  let tst_category = {
-    code: 'TST',
-    description: 'Testing category',
   };
 
   let ohno = error_manager.register_category(tst_category, tst_errors);

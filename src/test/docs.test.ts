@@ -26,7 +26,7 @@ test(async function simple_example(t) {
 
   // Lets say our module is called "Testing" and we chose the code A for it.
   let tst_category = {
-    code: 'A',
+    unique_code: 'A',
     description: 'Testing category',
   };
 
