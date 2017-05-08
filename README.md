@@ -44,11 +44,17 @@ try {
 // Annotations can be anything, and they can be used while wrapping
 // existing Errors as well
 
-throw ohno.something_not_on_the_up_and_up(new Error('carp'), {
+let catastrophe = ohno.something_not_on_the_up_and_up(new Error('carp'), {
   what_is_going_on: 'fishy',
   in_this_hotel_anyway: 'business',
   fishiness: 0.99,
 });
+
+// In your error handling middleware, you can just re-throw the Catastrophe
+// if you are in debug mode, or else get the unique error identifier:
+
+catastrophe.identity(); // -> 'E_0'
+catastrophe.identity_json(); // {error_category: 'E', error_number: 0}
 ```
 
 Each error (`Catastrophe`) is a part of a Category. Each Category has a:
@@ -61,14 +67,15 @@ Each Catastrophe has:
 * An associated HTTP Status Code
 
 When you create a Catastrophe, you can annotate it with some arbitrary
-data. A native JS `new Error('catastrophic')` object is included, from
-which a stack trace can be accessed.
+data. You can wrap an existing `instanceof Error`. If you don't, a
+native JS `new Error('catastrophic')` object is used. A stack trace from
+one of these is accessible.
 
-You use a builder pattern to construct error categories with errors,
-and receive one factory object per category, which lets you construct
-Catastrophes for throwing. TypeScript provides auto completion for these
-factories. These factories are called `ErrorCat`s. Idiomatic ErrorCats
-are named `ohno`.
+You use a builder pattern (-ish) to construct error categories with
+errors, and receive one factory object per category, which lets you
+construct Catastrophes for throwing. TypeScript provides auto completion
+for these factories. These factories are called `ErrorCat`s. Idiomatic
+ErrorCats are named `ohno`.
 
 Any property in this library that is described as permanent or unique is
 used to construct error identifiers for public consumption. They should
