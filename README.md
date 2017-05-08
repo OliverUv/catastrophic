@@ -24,7 +24,7 @@ let ohno = error_manager.new_category({
   too_boring_to_compute: {
     unique_number: 1,
     http_code: 400,
-    description: `user supplied very boring data`,
+    // description: 'too_boring_to_compute',  << Default to key if not set
   },
 });
 

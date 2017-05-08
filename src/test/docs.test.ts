@@ -40,7 +40,6 @@ test(async function simple_example(t) {
     too_boring_to_compute: {
       unique_number: 1,
       http_code: 400,
-      description: `user supplied very boring data`,
     },
   };
 
@@ -65,7 +64,8 @@ test(async function simple_example(t) {
     throwing_inner_function();
   } catch (e) {
     // e.category == tst_category
-    // e.error == tst_errors.too_boring_to_compute
+    // e.error ~= tst_errors.too_boring_to_compute
+    // e.error.description == 'too_boring_to_compute'
     // e.annotation == 'just as expected'
     // e.stack and e.native_error.stack contains "throwing_inner_function"
     // e.identity() == 'A_1'

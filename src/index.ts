@@ -22,7 +22,11 @@ export interface CategorySpec {
 export interface ErrorSpec {
   unique_number:number;
   http_code:number;
-  description:string;
+  description?:string;
+}
+
+export interface SolidErrorSpec extends ErrorSpec {
+  description:string; // Known to have description
 }
 
 export interface ErrorSpecCollection {
@@ -36,7 +40,7 @@ export interface CatastropheIdentity {
 
 export interface CatastropheSpec {
   native_error:Error;
-  error:ErrorSpec;
+  error:SolidErrorSpec;
   category:CategorySpec;
   separator:string;
   annotation?:any;
@@ -44,7 +48,7 @@ export interface CatastropheSpec {
 
 export class Catastrophe {
   public native_error:Error;
-  public error:ErrorSpec;
+  public error:SolidErrorSpec;
   public stack:string;
   public category:CategorySpec;
   public separator:string;
@@ -77,7 +81,7 @@ export class Catastrophe {
 }
 
 class Category {
-  private unique_numbers:{[num:number]:boolean} = {};
+  private unique_numbers:{[num:number]:SolidErrorSpec} = {};
 
   constructor(
     private separator:string,
@@ -89,13 +93,26 @@ class Category {
   }
 
   private register_errors(errors:ErrorSpecCollection) : void {
-    // Ensure key and unique_number are not registered
     Object.keys(errors).forEach((k) => {
-      if (this.unique_numbers[errors[k].unique_number]) {
+      let error = errors[k];
+
+      // Ensure key and unique_number are not registered
+      if (this.unique_numbers[error.unique_number]) {
         this.ohno.non_unique_error_number([this.category, k, errors]);
       }
-      this.unique_numbers[errors[k].unique_number] = true;
+
+      // Set description to key name if none is set
+      if (!error.description) {
+        error.description = k;
+      }
+
+      // Register unique number as taken
+      this.unique_numbers[error.unique_number] = <SolidErrorSpec>error;
     });
+  }
+
+  private get_solid_spec(error:ErrorSpec):SolidErrorSpec {
+    return this.unique_numbers[error.unique_number];
   }
 
   public get_die_for(error:ErrorSpec) : ReturnsCatastrophe {
@@ -114,7 +131,7 @@ class Category {
         annotation = inner_error_or_annotation;
       }
       return new Catastrophe({
-        error,
+        error: this.get_solid_spec(error),
         native_error: inner_error || new Error('catastrophe'),
         category: this.category,
         separator: this.separator,

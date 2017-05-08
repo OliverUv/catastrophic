@@ -75,6 +75,31 @@ test(async function basic_use(t) {
   }
 });
 
+test(async function terse(t) {
+  t.plan(1);
+
+  let error_manager = new Catastrophic();
+
+  let category = {
+    unique_code: 'TRS',
+    description: 'Terse category',
+  };
+
+  let errors = {
+    self_explanatory_error: {
+      unique_number: 2,
+      http_code: 500,
+      // description: 'self_explanatory_error',  < Automatically added
+    }
+  };
+
+  let ohno = error_manager.new_category(category, errors);
+
+  const dang = ohno.self_explanatory_error();
+
+  t.is(dang.error.description, 'self_explanatory_error');
+});
+
 test(async function inner_error(t) {
   t.plan(10);
 
