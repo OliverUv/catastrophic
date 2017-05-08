@@ -53,7 +53,12 @@ test(async function simple_example(t) {
     // trigger auto complete suggestions as appropriate.
     // ohno's type is `Cat<typeof tst_errors>`.
     // Fantastic.
-    throw ohno.too_boring_to_compute('errordata');
+    throw ohno.too_boring_to_compute({
+      boring_level: 9001,
+      extra_infos: 'This object is an annotation.',
+      sweet_infos: 'You can annotate your Catties however you want.',
+      xoxox_infos: 'But you should not show the annotations to clients.',
+    });
   }
 
   try {
@@ -61,12 +66,25 @@ test(async function simple_example(t) {
   } catch (e) {
     // e.category == tst_category
     // e.error == tst_errors.too_boring_to_compute
-    // e.annotation == 'errordata'
-    // e.native_error.stack contains "throwing_inner_function"
+    // e.annotation == 'just as expected'
+    // e.stack and e.native_error.stack contains "throwing_inner_function"
     // e.identity() == 'A_1'
     // e.identity_json() == {
     //   error_category: 'A',
     //   error_number: 1
     // }
+  }
+
+  // You can also wrap existing Errors (they must be `instanceof Error`).
+  // If you do so, the stack of the wrapped error will be used. Convenient!
+  try {
+    throw Error('worrying too much i cant do it captain, i just cant do it');
+  } catch (e) {
+    let err = ohno.tepid_trepidations(e, 'just as expected');
+    // err.native_error is the error above
+    // err.annotation is 'just as expected'
+    let err_2 = ohno.tepid_trepidations(e);
+    // since no annotation was given, we used the Error's message instead, so
+    // err_2.annotation = 'worrying too much i cant do it captain, i just cant do it'
   }
 });

@@ -98,19 +98,36 @@ class Category {
     });
   }
 
-  // Builds a Catastrophe for throwing
-  public die(error:ErrorSpec, annotation?:any) : Catastrophe {
-    return new Catastrophe({
-      native_error: new Error('catastrophe'),
-      error,
-      category: this.category,
-      separator: this.separator,
-      annotation,
-    });
+  public get_die_for(error:ErrorSpec) : ReturnsCatastrophe {
+    return (
+      inner_error_or_annotation,
+      optional_annotation_if_error_given,
+    ) : Catastrophe => {
+      let inner_error:Error|undefined = undefined;
+      let annotation:any = optional_annotation_if_error_given;
+      if (inner_error_or_annotation instanceof Error) {
+        inner_error = inner_error_or_annotation;
+        if (!annotation) {
+          annotation = inner_error.message;
+        }
+      } else {
+        annotation = inner_error_or_annotation;
+      }
+      return new Catastrophe({
+        error,
+        native_error: inner_error || new Error('catastrophe'),
+        category: this.category,
+        separator: this.separator,
+        annotation,
+      });
+    }
   }
 }
 
-export type ReturnsCatastrophe = (annotation?:any) => Catastrophe;
+export type ReturnsCatastrophe = (
+    annotation_or_error?:any|Error,
+    optional_annotation_if_error_given?:any,
+) => Catastrophe;
 
 export type ErrorCat<T> = {
   [error_key in keyof T]:ReturnsCatastrophe;
@@ -195,7 +212,7 @@ export class Catastrophic {
       // Build and return Catastrophe factory
       let cat:any = {};
       Object.keys(errors).forEach((k) => {
-        cat[k] = (annotation:any) => category.die(errors[k], annotation);
+        cat[k] = category.get_die_for(errors[k]);
       });
       return <ErrorCat<T>>cat;
     // } end unsafe
