@@ -14,21 +14,21 @@
 
 import { test } from 'ava';
 
-import { CatastrophicCaretaker, Catastrophe } from '../';
+import { Catastrophic, Catastrophe } from '../';
 
 test(async function throw_on_reserved_category_code(t) {
   t.plan(2);
-  let error_manager = new CatastrophicCaretaker();
+  let error_manager = new Catastrophic();
   t.throws(() => {
-    error_manager.register_category({
+    error_manager.new_category({
       unique_code: 'CATASTROPHIC',
       description: 'This must not be allowed.',
     },{});
   });
 
-  let error_manager_2 = new CatastrophicCaretaker('INTRNL');
+  let error_manager_2 = new Catastrophic('INTRNL');
   t.throws(() => {
-    error_manager_2.register_category({
+    error_manager_2.new_category({
       unique_code: 'INTRNL',
       description: 'This must not be allowed.',
     },{});
@@ -36,18 +36,18 @@ test(async function throw_on_reserved_category_code(t) {
 });
 
 test(async function throw_on_duplicate_category_code(t) {
-  let error_manager = new CatastrophicCaretaker();
+  let error_manager = new Catastrophic();
   t.plan(1);
-  error_manager.register_category({
+  error_manager.new_category({
     unique_code: 'one',
     description: 'This is ok',
   }, {});
-  error_manager.register_category({
+  error_manager.new_category({
     unique_code: 'two',
     description: 'This is also ok',
   }, {});
   t.throws(() => {
-    error_manager.register_category({
+    error_manager.new_category({
       unique_code: 'two',
       description: 'But this is not, as two is already used',
     }, {});
@@ -55,10 +55,10 @@ test(async function throw_on_duplicate_category_code(t) {
 });
 
 test(async function throw_on_duplicate_error_number(t) {
-  let error_manager = new CatastrophicCaretaker();
+  let error_manager = new Catastrophic();
   t.plan(1);
   t.throws(() => {
-    error_manager.register_category({
+    error_manager.new_category({
       unique_code: 'one',
       description: 'This is ok',
     },{
@@ -79,16 +79,16 @@ test(async function throw_on_duplicate_error_number(t) {
 test(async function throw_on_separator_collision(t) {
   t.plan(1);
   t.throws(() => {
-    let error_manager = new CatastrophicCaretaker('X_', '_');
+    let error_manager = new Catastrophic('X_', '_');
   });;
 });
 
 test(async function throw_on_separator_collision_2(t) {
   t.plan(1);
-  let error_manager = new CatastrophicCaretaker('X', '_');
+  let error_manager = new Catastrophic('X', '_');
   t.plan(1);
   t.throws(() => {
-    error_manager.register_category({
+    error_manager.new_category({
       unique_code: 'heyo_',
       description: 'This is not ok',
     }, {});

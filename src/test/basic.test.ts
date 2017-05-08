@@ -14,12 +14,12 @@
 
 import { test } from 'ava';
 
-import { CatastrophicCaretaker, Catastrophe } from '../';
+import { Catastrophic, Catastrophe } from '../';
 
 test(async function basic_use(t) {
-  t.plan(7);
+  t.plan(8);
 
-  let error_manager = new CatastrophicCaretaker();
+  let error_manager = new Catastrophic();
 
   let tst_category = {
     unique_code: 'TST',
@@ -39,7 +39,7 @@ test(async function basic_use(t) {
     },
   };
 
-  let ohno = error_manager.register_category(tst_category, tst_errors);
+  let ohno = error_manager.new_category(tst_category, tst_errors);
 
   function throwing_inner_function() {
     throw ohno.too_boring_to_compute('errordata');
@@ -68,6 +68,7 @@ test(async function basic_use(t) {
   let stack = actually_thrown_error.native_error.stack;
   if (stack) {
     t.truthy(stack.includes('throwing_inner_function'));
+    t.truthy(actually_thrown_error.stack.includes('throwing_inner_function'));
   } else {
     t.fail('Thrown native contained no stack trace');
   }

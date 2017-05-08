@@ -14,7 +14,7 @@
 
 import { test } from 'ava';
 
-import { CatastrophicCaretaker, Catastrophe } from '../';
+import { Catastrophic, Catastrophe } from '../';
 
 test(async function simple_example(t) {
   t.plan(0); // We test everything in basic.test.ts, this file is a cleaner version.
@@ -22,7 +22,7 @@ test(async function simple_example(t) {
   // You would only create one CatastrophicCaretaker, and make it available
   // through your DI system. Any component or module can then use it to define
   // its own error category, with errors.
-  let error_manager = new CatastrophicCaretaker();
+  let error_manager = new Catastrophic();
 
   // Lets say our module is called "Testing" and we chose the code A for it.
   let tst_category = {
@@ -46,7 +46,7 @@ test(async function simple_example(t) {
 
   // ohno is your error factory for tst_errors, which you could just use within
   // a component or make available in a module through your DI system
-  let ohno = error_manager.register_category(tst_category, tst_errors);
+  let ohno = error_manager.new_category(tst_category, tst_errors);
 
   function throwing_inner_function() {
     // This is how you would use it. Typing `ohno.` will

@@ -112,7 +112,7 @@ class Category {
 
 export type ReturnsCatastrophe = (annotation?:any) => Catastrophe;
 
-export type Cat<T> = {
+export type ErrorCat<T> = {
   [error_key in keyof T]:ReturnsCatastrophe;
 };
 
@@ -144,9 +144,9 @@ const internal_errors = {
   },
 };
 
-type InternalErrorCat = Cat<typeof internal_errors>;
+type InternalErrorCat = ErrorCat<typeof internal_errors>;
 
-export class CatastrophicCaretaker {
+export class Catastrophic {
   private cat_descs:CategorySpec[] = [];
   private categories:Category[] = [];
   private category_codes:{[code:string]:boolean} = {};
@@ -156,16 +156,16 @@ export class CatastrophicCaretaker {
     private permanent_internal_error_code='CATASTROPHIC',
     private permanent_identity_separator='_',
   ) {
-    this.register_category({
+    this.new_category({
       unique_code: this.permanent_internal_error_code,
       description: 'Errors from within the Catastrophic Error Builder',
     }, internal_errors);
   }
 
-  public register_category<T extends ErrorSpecCollection>(
+  public new_category<T extends ErrorSpecCollection>(
     cat_desc:CategorySpec,
     errors:T,
-  ) : Cat<T> {
+  ) : ErrorCat<T> {
 
     // Ensure category code doesn't contain the identity separator
     if (cat_desc.unique_code.includes(this.permanent_identity_separator)) {
@@ -197,7 +197,7 @@ export class CatastrophicCaretaker {
       Object.keys(errors).forEach((k) => {
         cat[k] = (annotation:any) => category.die(errors[k], annotation);
       });
-      return <Cat<T>>cat;
+      return <ErrorCat<T>>cat;
     // } end unsafe
   }
 }

@@ -11,9 +11,9 @@ errors.
 ```typescript
 // Terse example
 
-let error_manager = new CatastrophicCaretaker();
+let error_manager = new Catastrophic();
 
-let ohno_e = error_manager.register_category({
+let ohno_e = error_manager.new_category({
   unique_code: 'E',
   description: 'Example category',
 }, {
@@ -29,8 +29,8 @@ let ohno_e = error_manager.register_category({
   },
 });
 
-// Typing ohno_e. will trigger auto complete suggestions as
-// appropriate. ohno_e's type is Cat<typeof tst_errors>. Fantastic.
+// Typing ohno_e. will trigger auto complete suggestions as appropriate.
+// ohno_e's type is ErrorCat<typeof tst_errors>. Fantastic.
 throw ohno_e.too_boring_to_compute('the most boring datums');
 ```
 
@@ -50,8 +50,8 @@ which a stack trace can be accessed.
 You use a builder pattern to construct error categories with errors,
 and receive one factory object per category, which lets you construct
 Catastrophes for throwing. TypeScript provides auto completion for these
-factories. These factories are called `Cat`s. Idiomatic Cats are named
-`ohno`.
+factories. These factories are called `ErrorCat`s. Idiomatic ErrorCats
+are named `ohno`.
 
 Any property in this library that is described as permanent or unique is
 used to construct error identifiers for public consumption. They should
