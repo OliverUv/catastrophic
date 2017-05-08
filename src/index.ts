@@ -45,6 +45,7 @@ export interface CatastropheSpec {
 export class Catastrophe {
   public native_error:Error;
   public error:ErrorSpec;
+  public stack:string;
   public category:CategorySpec;
   public separator:string;
   public annotation?:any;
@@ -57,6 +58,7 @@ export class Catastrophe {
   constructor(spec:CatastropheSpec) {
     this.native_error = spec.native_error;
     this.error = spec.error;
+    this.stack = spec.native_error.stack || 'No stack trace available';
     this.category = spec.category;
     this.separator = spec.separator;
     this.annotation = spec.annotation;
