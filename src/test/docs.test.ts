@@ -67,7 +67,7 @@ test(async function simple_example(t) {
     // e.error ~= tst_errors.too_boring_to_compute
     // e.error.description == 'too_boring_to_compute'
     // e.annotation == 'just as expected'
-    // e.stack and e.native_error.stack contains "throwing_inner_function"
+    // e.stack and e.native_error.stack contain "throwing_inner_function"
     // e.identity() == 'A_1'
     // e.identity_json() == {
     //   error_category: 'A',
