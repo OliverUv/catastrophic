@@ -5,22 +5,21 @@ constructing modular unique permanent error codes.
 
 This library is intended for use in back ends which should not reveal
 internal state through errors, and which have separate front ends
-responsible for showing, translating, and presenting intelligible
-errors.
+responsible for translating and presenting intelligible errors.
 
 ```typescript
 // Terse example
 
 let error_manager = new Catastrophic();
 
-let ohno_e = error_manager.new_category({
+let ohno = error_manager.new_category({
   unique_code: 'E',
   description: 'Example category',
 }, {
-  tepid_trepidations: {
+  something_not_on_the_up_and_up: {
     unique_number: 0,
     http_code: 500,
-    description: `the function couldn't do it due to excessive worry`,
+    description: `the owls are not what they seem`,
   },
   too_boring_to_compute: {
     unique_number: 1,
@@ -29,9 +28,27 @@ let ohno_e = error_manager.new_category({
   },
 });
 
-// Typing ohno_e. will trigger auto complete suggestions as appropriate.
-// ohno_e's type is ErrorCat<typeof tst_errors>. Fantastic.
-throw ohno_e.too_boring_to_compute('the most boring datums');
+// Typing ohno. will trigger auto complete suggestions as appropriate.
+// ohno's type is ErrorCat<typeof tst_errors>. Fantastic.
+
+throw ohno.too_boring_to_compute('the most boring datums');
+
+// You can also wrap existing errors
+
+try {
+  throw new Error(`it's all bent sideways your majesty`);
+} catch (e) {
+  throw ohno.something_not_on_the_up_and_up(e);
+}
+
+// Annotations can be anything, and they can be used while wrapping
+// existing Errors as well
+
+throw ohno.something_not_on_the_up_and_up(new Error('carp'), {
+  what_is_going_on: 'fishy',
+  in_this_hotel_anyway: 'business',
+  fishiness: 0.99,
+});
 ```
 
 Each error (`Catastrophe`) is a part of a Category. Each Category has a:
@@ -64,13 +81,13 @@ not implicitly, to avoid any unexpected changes.
 
 # Example
 
-Do check out `src/test/docs.test.ts`
+Look in src/test/docs.test.ts
 
 # Details
 
 * Requires TypeScript 2.1 or higher (uses `keyof`)
+* Tested on Node 7.9.0, with TS 2.3.2 (2017-05-08) (0e09712)
 * Tested on Node 7.9.0, with TS 2.1.5 (2017-05-07) (c76f427)
-* Tested on Node 7.9.0, with TS 2.3.2 (2017-05-07) (be5e5b0)
 * See LICENSE file for license (Apache 2.0. You may also ask
   Oliver Uvman for a GPLv2 compatible license.)
 * See CONTRIBUTING for contributor's agreement (You grant Apache 2.0

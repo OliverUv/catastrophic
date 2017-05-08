@@ -1,6 +1,6 @@
 {
   "name": "catastrophic",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Auto completion and dependency injection friendly library for constructing modular unique permanent error codes",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
