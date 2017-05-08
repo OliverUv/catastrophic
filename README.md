@@ -88,7 +88,7 @@ not implicitly, to avoid any unexpected changes.
 
 # Example
 
-Look in src/test/docs.test.ts
+Look in [src/test/docs.test.ts](src/test/docs.test.ts)
 
 # Details
 
