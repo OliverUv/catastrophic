@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export interface CategorySpec {
+export type DefaultAnnotation = any | undefined | null;
+
+export interface CategorySpec<D = DefaultAnnotation> {
   // Should only be visible to devs inside the project,
   // never exposed anywhere except debug logs.
   unique_code:string;
@@ -38,21 +40,21 @@ export interface CatastropheIdentity {
   error_number:number;
 }
 
-export interface CatastropheSpec {
+export interface CatastropheSpec<D = DefaultAnnotation> {
   native_error:Error;
   error:SolidErrorSpec;
   category:CategorySpec;
   separator:string;
-  annotation?:any;
+  annotation:D;
 }
 
-export class Catastrophe {
+export class Catastrophe<D = DefaultAnnotation> {
   public native_error:Error;
   public error:SolidErrorSpec;
   public stack:string;
-  public category:CategorySpec;
+  public category:CategorySpec<D>;
   public separator:string;
-  public annotation?:any;
+  public annotation?:D;
   // If you wish the annotation could be statically typed per ErrorDesc,
   // take a look at the experiment/typesafe_arbitrary_data{,2} branches.
   // It's as far as I got. Probably not possible. :( See also
@@ -117,8 +119,8 @@ class Category {
 
   public get_die_for(error:ErrorSpec) : ReturnsCatastrophe {
     return (
-      inner_error_or_annotation,
-      optional_annotation_if_error_given,
+      inner_error_or_annotation = undefined,
+      optional_annotation_if_error_given = undefined,
     ) : Catastrophe => {
       let inner_error:Error|undefined = undefined;
       let annotation:any = optional_annotation_if_error_given;
@@ -141,13 +143,13 @@ class Category {
   }
 }
 
-export type ReturnsCatastrophe = (
-    annotation_or_error?:any|Error,
-    optional_annotation_if_error_given?:any,
+export type ReturnsCatastrophe<D = DefaultAnnotation> = (
+    annotation_or_error?:D|Error,
+    optional_annotation_if_error_given?:D,
 ) => Catastrophe;
 
-export type ErrorCat<T> = {
-  [error_key in keyof T]:ReturnsCatastrophe;
+export type ErrorCat<T, D = DefaultAnnotation> = {
+  [error_key in keyof T]:ReturnsCatastrophe<D>;
 };
 
 const internal_errors = {
@@ -196,10 +198,10 @@ export class Catastrophic {
     }, internal_errors);
   }
 
-  public new_category<T extends ErrorSpecCollection>(
-    cat_desc:CategorySpec,
+  public new_category<T extends ErrorSpecCollection, D = DefaultAnnotation>(
+    cat_desc:CategorySpec<D>,
     errors:T,
-  ) : ErrorCat<T> {
+  ) : ErrorCat<T, D> {
 
     // Ensure category code doesn't contain the identity separator
     if (cat_desc.unique_code.includes(this.permanent_identity_separator)) {
@@ -210,6 +212,21 @@ export class Catastrophic {
     if (this.category_codes[cat_desc.unique_code]) {
       if (cat_desc.unique_code == this.permanent_internal_error_code) {
         throw this.ohno.tried_to_use_reserved_category_code();
+        // Even though the argument to tried_to_use_reserved_category_code has
+        // the type any | undefined | null (or the same without null), and it
+        // has `undefined` as default parameters, we are not allowed to elide
+        // the argument.
+        //
+        // However, throw this.ohno.tried_to_use_reserved_category_code(undefined);
+        // would be ok. So `arg:undefined|X` is not equivalent to `arg?:X` - curious.
+        //
+        // Since we can't forbid users from calling the error factory with type
+        // D without making the API overly wordy for those who want to allow undefined
+        // annotations, this attempt at implementing type safety for the annotation
+        // fails. Another problem would have been to figure out how this would interact
+        // with wrapping errors.
+        //
+        // Oh well, no big loss. If you're reading this, wow.
       }
       throw this.ohno.non_unique_category_code(cat_desc);
     }
@@ -231,7 +248,7 @@ export class Catastrophic {
       Object.keys(errors).forEach((k) => {
         cat[k] = category.get_die_for(errors[k]);
       });
-      return <ErrorCat<T>>cat;
+      return <ErrorCat<T, D>>cat;
     // } end unsafe
   }
 }
