@@ -194,7 +194,7 @@ export class Catastrophic {
     private permanent_internal_error_code='CATASTROPHIC',
     private permanent_identity_separator='_',
   ) {
-    this.new_category({
+    this.ohno = this.new_category({
       unique_code: this.permanent_internal_error_code,
       description: 'Errors from within the Catastrophic Error Builder',
     }, internal_errors);
