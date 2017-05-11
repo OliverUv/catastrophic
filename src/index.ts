@@ -21,12 +21,13 @@ export interface CategorySpec {
 
 export interface ErrorSpec {
   unique_number:number;
-  http_code:number;
+  http_code?:number;
   description?:string;
 }
 
 export interface SolidErrorSpec extends ErrorSpec {
   description:string; // Known to have description
+  http_code:number;
 }
 
 export interface ErrorSpecCollection {
@@ -104,6 +105,9 @@ class Category {
       // Set description to key name if none is set
       if (!error.description) {
         error.description = k;
+      }
+      if (error.http_code == undefined || error.http_code == null) {
+        error.http_code = 500;
       }
 
       // Register unique number as taken

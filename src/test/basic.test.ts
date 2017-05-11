@@ -76,7 +76,7 @@ test(async function basic_use(t) {
 });
 
 test(async function terse(t) {
-  t.plan(1);
+  t.plan(2);
 
   let error_manager = new Catastrophic();
 
@@ -87,8 +87,8 @@ test(async function terse(t) {
 
   let errors = {
     self_explanatory_error: {
-      unique_number: 2,
-      http_code: 500,
+      unique_number: 0,
+      // http_code: 500, < Automatically added
       // description: 'self_explanatory_error',  < Automatically added
     }
   };
@@ -98,6 +98,7 @@ test(async function terse(t) {
   const dang = ohno.self_explanatory_error();
 
   t.is(dang.error.description, 'self_explanatory_error');
+  t.is(dang.error.http_code, 500);
 });
 
 test(async function inner_error(t) {

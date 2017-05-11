@@ -18,13 +18,12 @@ let ohno = error_manager.new_category({
 }, {
   something_not_on_the_up_and_up: {
     unique_number: 0,
-    http_code: 500,
     description: `the owls are not what they seem`,
   },
   too_boring_to_compute: {
     unique_number: 1,
-    http_code: 400,
-    // description: 'too_boring_to_compute',  << Default to key if not set
+    http_code: 400, // << Would've defaulted to 500 if we didn't specify it
+    // description: 'too_boring_to_compute',  << Defaults to key if not set
   },
 });
 
@@ -67,9 +66,9 @@ Each Catastrophe has:
 * An associated HTTP Status Code
 
 When you create a Catastrophe, you can annotate it with some arbitrary
-data. You can wrap an existing `instanceof Error`. If you don't, a
-native JS `new Error('catastrophic')` object is used. A stack trace from
-one of these is accessible.
+data. You can wrap an `instanceof Error`. If you don't, a native JS `new
+Error('catastrophic')` object is used. A stack trace from one of these
+is accessible.
 
 You use a builder pattern (-ish) to construct error categories with
 errors, and receive one factory object per category, which lets you
@@ -84,7 +83,8 @@ in debug logs.
 
 Permanent/unique properties should never be changed once they have been
 defined. They are defined explicitly by developers using this library,
-not implicitly, to avoid any unexpected changes.
+not implicitly, to avoid any unexpected changes. The library ensures
+that there are no collisions between unique identifiers.
 
 # Example
 
