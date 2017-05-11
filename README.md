@@ -15,6 +15,9 @@ let error_manager = new Catastrophic();
 let ohno = error_manager.new_category({
   unique_code: 'E',
   description: 'Example category',
+  // default_http_code: 400,
+  // We could specify a default http code for all the errors in this
+  // category if we wanted to. This is 500 unspecified.
 }, {
   something_not_on_the_up_and_up: {
     unique_number: 0,

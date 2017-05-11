@@ -13,10 +13,11 @@
 // limitations under the License.
 
 export interface CategorySpec {
-  // Should only be visible to devs inside the project,
-  // never exposed anywhere except debug logs.
   unique_code:string;
+  default_http_code?:number;
   description:string;
+  // description should only be visible to devs inside the project, never
+  // exposed anywhere except debug logs.
 }
 
 export interface ErrorSpec {
@@ -83,13 +84,17 @@ export class Catastrophe {
 
 class Category {
   private unique_numbers:{[num:number]:SolidErrorSpec} = {};
+  private default_http_code = 500;
 
   constructor(
     private separator:string,
-    private category:CategorySpec,
+    private spec:CategorySpec,
     private ohno:InternalErrorCat,
     private errors:ErrorSpecCollection,
   ) {
+    if (spec.default_http_code != undefined) {
+      this.default_http_code = spec.default_http_code;
+    }
     this.register_errors(errors);
   }
 
@@ -99,7 +104,7 @@ class Category {
 
       // Ensure key and unique_number are not registered
       if (this.unique_numbers[error.unique_number]) {
-        this.ohno.non_unique_error_number([this.category, k, errors]);
+        throw this.ohno.non_unique_error_number([this.spec, k, errors]);
       }
 
       // Set description to key name if none is set
@@ -107,7 +112,7 @@ class Category {
         error.description = k;
       }
       if (error.http_code == undefined || error.http_code == null) {
-        error.http_code = 500;
+        error.http_code = this.default_http_code;
       }
 
       // Register unique number as taken
@@ -137,7 +142,7 @@ class Category {
       return new Catastrophe({
         error: this.get_solid_spec(error),
         native_error: inner_error || new Error('catastrophe'),
-        category: this.category,
+        category: this.spec,
         separator: this.separator,
         annotation,
       });
@@ -185,7 +190,7 @@ const internal_errors = {
 type InternalErrorCat = ErrorCat<typeof internal_errors>;
 
 export class Catastrophic {
-  private cat_descs:CategorySpec[] = [];
+  private category_specs:CategorySpec[] = [];
   private categories:Category[] = [];
   private category_codes:{[code:string]:boolean} = {};
   private ohno:InternalErrorCat;
@@ -201,31 +206,31 @@ export class Catastrophic {
   }
 
   public new_category<T extends ErrorSpecCollection>(
-    cat_desc:CategorySpec,
+    cat_spec:CategorySpec,
     errors:T,
   ) : ErrorCat<T> {
 
     // Ensure category code doesn't contain the identity separator
-    if (cat_desc.unique_code.includes(this.permanent_identity_separator)) {
-      throw this.ohno.category_code_contains_separator(cat_desc);
+    if (cat_spec.unique_code.includes(this.permanent_identity_separator)) {
+      throw this.ohno.category_code_contains_separator(cat_spec);
     }
 
     // Ensure no conflicting Category Code
-    if (this.category_codes[cat_desc.unique_code]) {
-      if (cat_desc.unique_code == this.permanent_internal_error_code) {
+    if (this.category_codes[cat_spec.unique_code]) {
+      if (cat_spec.unique_code == this.permanent_internal_error_code) {
         throw this.ohno.tried_to_use_reserved_category_code();
       }
-      throw this.ohno.non_unique_category_code(cat_desc);
+      throw this.ohno.non_unique_category_code(cat_spec);
     }
 
     // Save metadata
-    this.cat_descs.push(cat_desc);
-    this.category_codes[cat_desc.unique_code] = true;
+    this.category_specs.push(cat_spec);
+    this.category_codes[cat_spec.unique_code] = true;
 
     // Construct
     let category = new Category(
         this.permanent_identity_separator,
-        cat_desc,
+        cat_spec,
         this.ohno,
         errors);
 

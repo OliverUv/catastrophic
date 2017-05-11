@@ -75,7 +75,7 @@ test(async function basic_use(t) {
   }
 });
 
-test(async function terse(t) {
+test(async function terse_with_defaults(t) {
   t.plan(2);
 
   let error_manager = new Catastrophic();
@@ -99,6 +99,41 @@ test(async function terse(t) {
 
   t.is(dang.error.description, 'self_explanatory_error');
   t.is(dang.error.http_code, 500);
+});
+
+test(async function terse_with_http_code(t) {
+  t.plan(4);
+
+  let error_manager = new Catastrophic();
+
+  let category = {
+    unique_code: 'TRS',
+    description: 'Terse category',
+    default_http_code: 400,
+  };
+
+  let errors = {
+    self_explanatory_error: {
+      unique_number: 0,
+      // http_code: 400, < Automatically added
+      // description: 'self_explanatory_error',  < Automatically added
+    },
+    other_error: {
+      unique_number: 1,
+      http_code: 500,
+      // description: 'other_error',  < Automatically added
+    }
+  };
+
+  let ohno = error_manager.new_category(category, errors);
+
+  const dang = ohno.self_explanatory_error();
+  t.is(dang.error.description, 'self_explanatory_error');
+  t.is(dang.error.http_code, 400);
+
+  const dang2 = ohno.other_error();
+  t.is(dang2.error.description, 'other_error');
+  t.is(dang2.error.http_code, 500);
 });
 
 test(async function inner_error(t) {
