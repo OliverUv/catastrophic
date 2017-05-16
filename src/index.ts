@@ -12,41 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export interface CategorySpec {
-  unique_code:string;
-  default_http_code?:number;
-  description:string;
-  // description should only be visible to devs inside the project, never
-  // exposed anywhere except debug logs.
-}
+import {
+  Summary,
+  CategorySummary,
+  CategorySpec,
+  SolidCategorySpec,
+  ErrorSpec,
+  SolidErrorSpec,
+  ErrorSpecCollection,
+  CatastropheIdentity,
+  CatastropheSpec,
+} from './interfaces';
 
-export interface ErrorSpec {
-  unique_number:number;
-  http_code?:number;
-  description?:string;
-}
-
-export interface SolidErrorSpec extends ErrorSpec {
-  description:string; // Known to have description
-  http_code:number;
-}
-
-export interface ErrorSpecCollection {
-  [error_key:string]:ErrorSpec;
-}
-
-export interface CatastropheIdentity {
-  error_category:string;
-  error_number:number;
-}
-
-export interface CatastropheSpec {
-  native_error:Error;
-  error:SolidErrorSpec;
-  category:CategorySpec;
-  separator:string;
-  annotation?:any;
-}
+import {
+  category_compare,
+  error_compare,
+} from './util';
 
 export class Catastrophe {
   public native_error:Error;
@@ -83,8 +64,9 @@ export class Catastrophe {
 }
 
 class Category {
-  private unique_numbers:{[num:number]:SolidErrorSpec} = {};
+  private num_2_err:{[num:number]:SolidErrorSpec} = {};
   private default_http_code = 500;
+  private solid_errors:SolidErrorSpec[] = [];
 
   constructor(
     private separator:string,
@@ -98,12 +80,22 @@ class Category {
     this.register_errors(errors);
   }
 
+  public get_summary_json() : CategorySummary {
+    let spec = this.spec;
+    spec.default_http_code = this.default_http_code;
+
+    return {
+      spec: <SolidCategorySpec>spec,
+      errors: this.solid_errors.sort(error_compare),
+    };
+  }
+
   private register_errors(errors:ErrorSpecCollection) : void {
     Object.keys(errors).forEach((k) => {
       let error = errors[k];
 
       // Ensure key and unique_number are not registered
-      if (this.unique_numbers[error.unique_number]) {
+      if (this.num_2_err[error.unique_number]) {
         throw this.ohno.non_unique_error_number([this.spec, k, errors]);
       }
 
@@ -116,12 +108,13 @@ class Category {
       }
 
       // Register unique number as taken
-      this.unique_numbers[error.unique_number] = <SolidErrorSpec>error;
+      this.num_2_err[error.unique_number] = <SolidErrorSpec>error;
+      this.solid_errors.push(<SolidErrorSpec>error);
     });
   }
 
   private get_solid_spec(error:ErrorSpec):SolidErrorSpec {
-    return this.unique_numbers[error.unique_number];
+    return this.num_2_err[error.unique_number];
   }
 
   public get_die_for(error:ErrorSpec) : ReturnsCatastrophe {
@@ -234,6 +227,8 @@ export class Catastrophic {
         this.ohno,
         errors);
 
+    this.categories.push(category);
+
     // unsafe {
       // Build and return Catastrophe factory
       let cat:any = {};
@@ -243,4 +238,13 @@ export class Catastrophic {
       return <ErrorCat<T>>cat;
     // } end unsafe
   }
+
+  public get_summary_json() : Summary {
+    return {
+      separator: this.permanent_identity_separator,
+      categories: this.categories.map((c) => c.get_summary_json()).sort(category_compare),
+    };
+  }
 }
+
+export * from './interfaces';
