@@ -87,4 +87,8 @@ test(async function simple_example(t) {
     // since no annotation was given, we used the Error's message instead, so
     // err_2.annotation = 'worrying too much i cant do it captain, i just cant do it'
   }
+
+  // Get summary of all error categories and errors. See
+  // src/test/summary.test.ts for details
+  let cats_and_errors_json = error_manager.get_summary_json();
 });

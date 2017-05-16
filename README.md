@@ -57,6 +57,12 @@ let catastrophe = ohno.something_not_on_the_up_and_up(new Error('carp'), {
 
 catastrophe.identity(); // -> 'E_0'
 catastrophe.identity_json(); // {error_category: 'E', error_number: 0}
+
+// We can call a function to get a structure containing all registered
+// error categories and their registered errors, with computed values
+// from any defaults. Useful for generating docs for your client side
+// devs.
+let cats_and_errors_json = error_manager.get_summary_json();
 ```
 
 Each error (`Catastrophe`) is a part of a Category. Each Category has a:
