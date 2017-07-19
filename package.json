@@ -1,12 +1,12 @@
 {
   "name": "catastrophic",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Auto completion and dependency injection friendly library for constructing modular unique permanent error codes",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
   "scripts": {
     "clean": "rm -rf ./build",
-    "build": "tsc",
+    "release_build": "npm run clean && tsc --project deploy.tsconfig.json",
     "dev_build": "tsc --watch --pretty --noEmitOnError",
     "lint": "tslint --type-check --project tsconfig.json",
     "test": "ava --verbose",

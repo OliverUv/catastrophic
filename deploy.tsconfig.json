@@ -10,9 +10,9 @@
     "noImplicitReturns": true,
     "outDir": "build",
     "removeComments": true,
-    "sourceMap": true,
+    "sourceMap": false,
     "strictNullChecks": true,
-    "target": "es2016"
+    "target": "ES5"
   },
   "include": [
     "src/**/*"
