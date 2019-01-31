@@ -204,7 +204,7 @@ export class Catastrophic {
   ) : ErrorCat<T> {
 
     // Ensure category code doesn't contain the identity separator
-    if (cat_spec.unique_code.includes(this.permanent_identity_separator)) {
+    if (cat_spec.unique_code.indexOf(this.permanent_identity_separator) !== -1) {
       throw this.ohno.category_code_contains_separator(cat_spec);
     }
 

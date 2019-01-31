@@ -80,7 +80,7 @@ test(async function throw_on_separator_collision(t) {
   t.plan(1);
   t.throws(() => {
     let error_manager = new Catastrophic('X_', '_');
-  });;
+  });
 });
 
 test(async function throw_on_separator_collision_2(t) {
